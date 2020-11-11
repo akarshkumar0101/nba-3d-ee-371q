@@ -1,3 +1,5 @@
+import os
+import argparse
 '''
 This script has multiple steps
 1. Given a series of arguments, take in input image folder
@@ -8,3 +10,8 @@ This script has multiple steps
 
 
 # do stuff here with command line stuff
+parser = argparse.ArgumentParser(description='pass in the name of the input dir')
+parser.add_argument('input')
+args = parser.parse_args()
+
+
