@@ -1,5 +1,9 @@
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+
+import util, constants, draw, cam
 
 # THIS IS ADITYA'S CODE
 def so3_log_map_(R, eps=1e-5):
@@ -116,26 +120,3 @@ def so3_exponential_map(axang, homogeneous = False):
 #     if ret_vis_mask:
 #         return X_i, vis_mask
 #     return X_i
-
-# returns shape (cam, point, 2)
-def project_to_cam(X_w, dofs_cam):
-    bs_X_w, bs_dofs_cam = X_w.shape[:-1], dofs_cam.shape[:-1]
-    for _ in range(len(bs_X_w)):
-        dofs_cam = dofs_cam[..., None, :]
-    for _ in range(len(bs_dofs_cam)):
-        X_w = X_w[None, ...]
-    
-    R = so3_exponential_map(dofs_cam[..., 3:6]) # this goes from camera->world
-    Rinv = R.transpose(-1, -2) # world->camera
-    T = dofs_cam[..., :3]
-    
-    X_c = (Rinv @ ((X_w-T)[..., None]))[..., 0]
-    
-    fxy = np.e**dofs_cam[..., 6:]
-    
-    X_i = fxy * ((X_c/X_c[..., [-1]])[..., :2])
-    
-    
-    vis_mask = torch.logical_and(X_i>=-1., X_i<=1).all(dim=-1)
-    vis_mask = torch.logical_and(vis_mask, X_c[..., 2]>0.)
-    return X_i, vis_mask

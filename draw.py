@@ -1,7 +1,9 @@
-import matplotlib.pyplot as plt
+import torch
 import numpy as np
+import matplotlib.pyplot as plt
+import cv2
 
-import util
+import util, constants, draw, cam
 
 def multi_view(views, region=None, rows=1):
     plt.figure(figsize=(7*len(views), 7*rows))
@@ -21,11 +23,14 @@ def multi_view(views, region=None, rows=1):
     plt.tight_layout()
     return axs
 
-def show_cam_view(X_w, dofs_cam, ax=None):
+def show_cam_view(X_w, dofs_cam, ax=None, calc_fxy=cam.calc_fxy_ratio, **kwargs):
     if ax is None:
         ax = plt.gca()
-    X_i, vis_mask = util.project_to_cam(X_w, dofs_cam)
+    X_i, vis_mask = cam.project_to_cam(X_w, dofs_cam, calc_fxy)
     X_i = X_i[vis_mask]
-    ax.scatter(-X_i[:, 0], X_i[:, 1], marker='.')
+    ax.scatter(-X_i[:, 0], X_i[:, 1], marker='.', **kwargs)
     ax.set_xlim(-1, 1);ax.set_ylim(-1,1)
     plt.tick_params(axis='both', labelsize=0, length = 0)
+    
+    
+    
