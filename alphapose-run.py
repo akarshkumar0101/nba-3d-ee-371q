@@ -14,7 +14,9 @@ parser = argparse.ArgumentParser(description='pass in the name of the input dir'
 parser.add_argument('input')
 args = parser.parse_args()
 
-cmd = f'python alphapose/Alphapose/scripts/demo_inference.py --cfg alphapose/Alphapose/configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint alphapose/Alphapose/pretrained_models/fast_421_res152_256x192.pth --indir basketball/{input} --outdir basketball/{input}-alphapose --vis --save_img --save_video'
+
+print(args.input)
+cmd = f'python alphapose/Alphapose/scripts/demo_inference.py --cfg alphapose/Alphapose/configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint alphapose/Alphapose/pretrained_models/fast_421_res152_256x192.pth --indir basketball/{args.input} --outdir basketball/{args.input}-alphapose --vis --save_img --save_video'
 
 print(cmd)
 os.system(cmd)
