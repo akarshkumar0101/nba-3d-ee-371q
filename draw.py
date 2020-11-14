@@ -31,6 +31,21 @@ def show_cam_view(X_w, dofs_cam, ax=None, calc_fxy=cam.calc_fxy_ratio, **kwargs)
     ax.scatter(-X_i[:, 0], X_i[:, 1], marker='.', **kwargs)
     ax.set_xlim(-1, 1);ax.set_ylim(-1,1)
     plt.tick_params(axis='both', labelsize=0, length = 0)
+
     
+keypoint_parents = [0,0,0,1,2, 0,0,5,6,7,8,5,6,11,12,13,14]
+
+"""
+kp is of shape (num_people, 17, 2)
+"""
+def draw_people2D(img, kp, color=255, thickness=5):
+    newimg = img.copy()
+    for kpi in kp:
+        for ji in range(17):
+            pji = keypoint_parents[ji]
+            x, px = kpi[ji].astype(int), kpi[pji].astype(int)
+            newimg = cv2.line(newimg, (x[0], x[1]),(px[0], px[1]), color, thickness)
+    return newimg
+
     
     
