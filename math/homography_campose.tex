@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{amsthm} %lets us use \begin{proof}
+\usepackage[]{amssymb} %gives us the character \varnothing
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\usepackage[margin=1.0in]{geometry}
+
+
+\usepackage{color}
+\usepackage{listings}
+\lstset{ % General setup for the package
+	language=Python,
+	basicstyle=\small\sffamily,
+	numbers=left,
+	numberstyle=\tiny,
+	frame=tb,
+	tabsize=4,
+	columns=fixed,
+	showstringspaces=false,
+	showtabs=false,
+	keepspaces,
+	commentstyle=\color{red},
+	keywordstyle=\color{blue}
+}
+
+\title{Camera Pose from Homography Matrix}
+\author{Akarsh Kumar}
+\date\today
+
+\begin{document}
+\maketitle
+
+Let $R\in \textbf{R}^{3\times 3}$ and $T\in \textbf{R}^3$ be the rotation and translation of the camera. Let $f_x=fm_x, f_y=fm_y$ be the focal length of the camera.
+
+Then the equation for 
+
+\begin{align*}
+w
+\begin{bmatrix}
+u\\
+v\\
+1\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+&M_{11}\quad &M_{12}\quad &M_{13}\\
+&M_{21}\quad &M_{22}\quad &M_{23}\\
+&M_{31}\quad &M_{32}\quad &M_{33}\\
+\end{bmatrix}
+\begin{bmatrix}
+x_1\\
+x_2\\
+1\\
+\end{bmatrix}
+&=
+\begin{bmatrix}
+f_x\quad 0\quad 0\quad 0\\
+0\quad f_y\quad 0\quad 0\\
+0\quad 0\quad 1\quad 0\\
+\end{bmatrix}
+\begin{bmatrix}
+&R_{11}\quad &R_{12}\quad &R_{13}\quad &T_1\\
+&R_{21}\quad &R_{22}\quad &R_{23}\quad &T_2\\
+&R_{31}\quad &R_{32}\quad &R_{33}\quad &T_3\\
+&0\quad &0\quad &0\quad &1\\
+\end{bmatrix}
+\begin{bmatrix}
+x_1\\
+x_2\\
+0\\
+1\\
+\end{bmatrix}\\
+\begin{bmatrix}
+M_{11}x_1+M_{12}x_2+M_{13}\\
+M_{21}x_1+M_{22}x_2+M_{23}\\
+M_{31}x_1+M_{32}x_2+M_{33}\\
+\end{bmatrix}
+&=
+\begin{bmatrix}
+f_x\quad 0\quad 0\quad 0\\
+0\quad f_y\quad 0\quad 0\\
+0\quad 0\quad 1\quad 0\\
+\end{bmatrix}
+\begin{bmatrix}
+R_{11}x_1+R_{12}x_2+T_1\\
+R_{21}x_1+R_{22}x_2+T_2\\
+R_{31}x_1+R_{32}x_2+T_3\\
+1\\
+\end{bmatrix}\\
+\begin{bmatrix}
+M_{11}x_1+M_{12}x_2+M_{13}\\
+M_{21}x_1+M_{22}x_2+M_{23}\\
+M_{31}x_1+M_{32}x_2+M_{33}\\
+\end{bmatrix}
+&=
+\begin{bmatrix}
+f_x(R_{11}x_1+R_{12}x_2+T_1)\\
+f_y(R_{21}x_1+R_{22}x_2+T_2)\\
+R_{31}x_1+R_{32}x_2+T_3\\
+\end{bmatrix}
+\end{align*}
+
+
+\begin{align*}
+\begin{bmatrix}
+&M_{11}\quad &M_{12}\quad &M_{13}\\
+&M_{21}\quad &M_{22}\quad &M_{23}\\
+&M_{31}\quad &M_{32}\quad &M_{33}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+&f_xR_{11}\quad &f_xR_{12} \quad &f_xT_1\\
+&f_yR_{21}\quad &f_yR_{22}\quad &f_yT_2\\
+&R_{31}\quad &R_{32}\quad &T_3\\
+\end{bmatrix}
+\end{align*}
+
+\begin{align*}
+\text{find }& f_x, f_y, R\\
+\text{such that }\\
+&R \text{ is a rotation matrix}\\
+&R_{31} = M_{31}\\
+&R_{32} = M_{32}\\
+&T_3 = M_{33}\\
+\end{align*}
+
+
+
+
+\end{document}
+
+
