@@ -88,6 +88,19 @@ def so3_exponential_map(axang, homogeneous = False):
 #     trans_mat = translation_matrix(T)
 #     return trans_mat @ rot_mat
 
+
+def to_homo(X, axis=-1):
+    X = np.swapaxes(X, axis, -1)
+    X = np.concatenate([X, np.ones(X.shape[:-1]+(1,))], axis=-1)
+    X = np.swapaxes(X, axis, -1)
+    return X
+
+def from_homo(X, axis=-1):
+    X = np.swapaxes(X, axis, -1)
+    X = X[..., :-1]/X[..., -1, None]
+    X = np.swapaxes(X, axis, -1)
+    return X
+    
 # def to_homo(X, dim=-1):
 #     X = X.transpose(dim, -1)
 #     X = torch.cat((X, torch.ones(X.shape[:-1]+(1,))), dim=-1)
