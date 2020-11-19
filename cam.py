@@ -67,3 +67,40 @@ def project_to_cam(X_w, dofs_cam, calc_fxy=calc_fxy_ratio):
     vis_mask = torch.logical_and(X_i>=-1., X_i<=1).all(dim=-1)
     vis_mask = torch.logical_and(vis_mask, X_c[..., 2]>0.)
     return X_i, vis_mask
+
+
+# returns a crop such that:
+# x is cropped (xmin, xmax) left to right
+# y is cropped (ymin, ymax) down to up
+def get_intrinsic_mat(xmin, xmax, ymin, ymax):
+    u_0 = (xmin+xmax)/2.
+    v_0 = (ymin+ymax)/2.
+
+    xlim = 1.
+    # m_x should map [-xlim, xlim] to [xmin, xmax]
+    m_x = (xmax-xmin)/(xlim--xlim)
+
+    # m_y should map [-ylim, ylim] to [ymin, ymax] 
+    # such that the aspect ratio of (ymax-ymin)/(xmax-xmin) = (ylim--ylim)/(xlim--xlim)
+    # ylim = xlim * (ymax-ymin)/(xmax-xmin)
+    ylim = np.abs(xlim * (ymax-ymin)/(xmax-xmin))
+    m_y = (ymax-ymin)/(ylim--ylim)
+    
+    # -m_x is needed to make +X axis point right and not left in camera/projection coordinates
+    P = np.array([[ -m_x,     0, u_0, 0],
+                  [    0,   m_y, v_0, 0],
+                  [    0,     0,   1, 0]])
+    return P
+
+def apply_focus(f, P):
+    f = np.array(f)
+    P = np.tile(P, (*f.shape, 1, 1))
+    P[..., [0, 1], [0, 1]] = f[..., None]*P[..., [0, 1], [0, 1]]
+    return P
+
+def get_intrinsic_mat_default():
+    return get_intrinsic_mat(-1., 1., -1., 1.)
+
+def get_intrinsic_mat_for_img_shape(img_shape):
+    return get_intrinsic_mat(0, img_shape[1], img_shape[0], 0)
+
