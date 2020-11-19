@@ -48,4 +48,8 @@ def draw_people2D(img, kp, color=255, thickness=5):
     return newimg
 
     
+def set_img_bounds(img_shape, ax=None):
+    if ax is None:
+        ax = plt.gca()
+    ax.set_xlim(0, img_shape[1]);ax.set_ylim(img_shape[0], 0)
     
