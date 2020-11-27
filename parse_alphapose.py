@@ -34,16 +34,16 @@ Result for COCO (17 body parts)
     {15, "LAnkle"},
     {16, "RAnkle"},
 """
-def parse_alphapose(data_root, num_frames):
+def parse_alphapose(vid_root, num_frames):
     dirs = []
-    for d in os.listdir(data_root):
+    for d in os.listdir(vid_root):
         if re.match('view_[0-9]_alphapose', d):
             dirs.append(d)
     dirs.sort()
     kp, confs, scores, boxes = [], [], [], []
 
     for d in dirs:
-        kp_view, confs_view, scores_view, boxes_view = parse_alphapose_json_file(f'{data_root}/{d}/alphapose-results.json', num_frames)
+        kp_view, confs_view, scores_view, boxes_view = parse_alphapose_json_file(f'{vid_root}/{d}/alphapose-results.json', num_frames)
         kp.append(kp_view)
         confs.append(confs_view)
         scores.append(scores_view)
