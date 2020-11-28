@@ -12,7 +12,7 @@ def load_model_corners(data_root):
         # coordinates on the outside of corners,
         # order: top left, bot left, bot right, top right
         # (x, y) not (y, x)
-        return np.array(json.load(f))
+        return np.array(json.load(f)).astype(np.float32)
     
 """
 Loads the model image from models directory.
@@ -28,13 +28,13 @@ def get_model(data_root):
     _, court_bin = load_model_img(data_root)
     y, x = np.where(court_bin)
     X_m = np.stack([x, y, np.zeros_like(x)], axis=-1)
-    return X_m
+    return X_m.astype(np.float32)
 
 """
 Gets the model matrix that goes from model to world space based on court_corners.
 """
 def get_mat_model(model_corners):
-    M = np.eye(4)
+    M = np.eye(4, dtype=np.float32)
     scale = 1/(model_corners[1, 1] -model_corners[0, 1])
     M[1, 1] *= -1
     M[:2, :2] = scale*M[:2, :2]
