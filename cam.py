@@ -24,12 +24,13 @@ def calc_dofs_cam(cam_position, cam_points_to, dofs_f):
 
 def get_mat_view(dofs_cam):
     R = util.so3_exponential_map(dofs_cam[..., 3:6]) # this goes from camera->world
-    Rinv = R.transpose(-1, -2) # world->camera
     T = dofs_cam[..., :3]
     if type(dofs_cam) is torch.Tensor:
-        mat_view = torch.eye(4).repeat(*dofs_cam.shape[:-1],1,1)
+        Rinv = R.transpose(-1, -2) # world->camera
+        mat_view = torch.eye(4).repeat(*dofs_cam.shape[:-1], 1, 1)
     else:
-        mat_view = np.tile(np.eye(4, dtype=np.float32), (*dofs_cam.shape[:-1],1,1))
+        Rinv = R.swapaxes(-1, -2) # world->camera
+        mat_view = np.tile(np.eye(4, dtype=np.float32), (*dofs_cam.shape[:-1], 1, 1))
     mat_view[..., :3, :3] = Rinv[..., :3, :3]
     mat_view[..., :3, 3] = (-Rinv @ (T[..., :, None]))[..., 0]
     return mat_view
@@ -69,10 +70,13 @@ def project_to_cam(X_w, dofs_cam, img_shape_xy):
     X_i = util.from_homo(X_i)
     
     xmin, xmax, ymin, ymax = 0, img_shape_xy[0], 0, img_shape_xy[1]
-    viz_mask_x = np.logical_and(X_i[..., 0]>=xmin, X_i[..., 0]<=xmax)
-    viz_mask_y = np.logical_and(X_i[..., 1]>=ymin, X_i[..., 1]<=ymax)
-    viz_mask = np.logical_and(viz_mask_x, viz_mask_y)
-    viz_mask = np.logical_and(viz_mask, z_buf>0)
+    
+    pack = torch if (type(dofs_cam) is torch.Tensor) else np
+    
+    viz_mask_x = pack.logical_and(X_i[..., 0]>xmin, X_i[..., 0]<xmax)
+    viz_mask_y = pack.logical_and(X_i[..., 1]>ymin, X_i[..., 1]<ymax)
+    viz_mask = pack.logical_and(viz_mask_x, viz_mask_y)
+    viz_mask = pack.logical_and(viz_mask, z_buf>0)
     return X_i, viz_mask
 
 
