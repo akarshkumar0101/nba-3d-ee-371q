@@ -1,8 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import cv2
 
 import util
+
+import img_proc
 
 """
 Loads the model corners from models directory.
@@ -31,6 +34,17 @@ def get_model(data_root):
     return X_m.astype(np.float32)
 
 """
+Loads the model from models directory as a vector of shape (N, 3) into model space.
+"""
+def get_model_canny(data_root):
+    court_img, _ = load_model_img(data_root)
+    court_img = cv2.cvtColor(court_img, cv2.COLOR_RGB2GRAY)
+    court_bin = img_proc.process_img_canny(court_img)>128
+    y, x = np.where(court_bin)
+    X_m = np.stack([x, y, np.zeros_like(x)], axis=-1)
+    return X_m.astype(np.float32)
+
+"""
 Gets the model matrix that goes from model to world space based on court_corners.
 """
 def get_mat_model(model_corners):
@@ -44,7 +58,7 @@ def get_mat_model(model_corners):
 Loads the court model from models directory as a vector of shape (N, 3) into world space.
 """
 def calc_model_world_coordinates(data_root):
-    X_m = get_model(data_root)
+    X_m = get_model_canny(data_root)
     model_corners = load_model_corners(data_root)
     M = get_mat_model(model_corners)
     
