@@ -62,6 +62,22 @@ def draw_people_img(img, kp, color=255, thickness=5):
             newimg = cv2.line(newimg, (x[0], x[1]),(px[0], px[1]), color, thickness)
     return newimg
 
+color = np.random.randint(0, 255, size=(17, 3))
+
+"""
+kp is of shape (num_people, 17, 2)
+"""
+def draw_people_img_randomcol(img, kp, thickness=5):
+    newimg = img.copy()
+    for kpi in kp:
+        for ji in range(17):
+            pji = keypoint_parents[ji]
+            x, px = kpi[ji].astype(int), kpi[pji].astype(int)
+            
+            colori = tuple([int(i) for i in color[ji]])
+            newimg = cv2.line(newimg, (x[0], x[1]),(px[0], px[1]), color=colori, thickness=thickness)
+    return newimg
+
     
 def set_img_bounds(img_shape_xy, ax=None):
     if ax is None:
